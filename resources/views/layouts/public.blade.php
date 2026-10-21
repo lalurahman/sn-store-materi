@@ -11,10 +11,11 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
 
+        @include('components.theme-init')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-zinc-50 font-sans text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
-        <div class="min-h-screen">
+        <div x-data="{}" class="min-h-screen">
             <header class="relative z-30 border-b border-zinc-200 bg-white/95 dark:border-zinc-800 dark:bg-zinc-950/95">
                 <div class="mx-auto flex h-[72px] max-w-7xl items-center justify-between gap-5 px-4 sm:px-6 lg:px-8">
                     <a href="{{ route('home') }}" class="flex shrink-0 items-center gap-2.5" aria-label="SN Store, beranda">
@@ -46,7 +47,11 @@
                                 <span aria-hidden="true" class="text-lg leading-none">⌕</span>
                             </button>
                         </form>
-                        <a href="{{ route('login') }}" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Masuk</a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Login</a>
+                        @endauth
                         <div x-data="{ open: false }" class="relative">
                             <button type="button" @click="open = !open" @keydown.escape.window="open = false" :aria-expanded="open.toString()" aria-controls="cart-menu" class="flex items-center gap-2 rounded-full bg-red-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-800 active:scale-[0.98]">
                                 Keranjang
@@ -60,9 +65,12 @@
                         </div>
                     </div>
 
-                    <button type="button" @click="$dispatch('toggle-mobile-menu')" class="flex size-10 items-center justify-center rounded-full border border-zinc-200 text-lg text-zinc-800 transition hover:border-red-300 hover:text-red-700 lg:hidden dark:border-zinc-700 dark:text-white dark:hover:border-red-700 dark:hover:text-red-300" aria-label="Buka navigasi">
-                        <span aria-hidden="true">☰</span>
-                    </button>
+                    <div class="flex shrink-0 items-center gap-2">
+                        <x-theme-toggle />
+                        <button type="button" @click="$dispatch('toggle-mobile-menu')" class="flex size-10 items-center justify-center rounded-full border border-zinc-200 text-lg text-zinc-800 transition hover:border-red-300 hover:text-red-700 lg:hidden dark:border-zinc-700 dark:text-white dark:hover:border-red-700 dark:hover:text-red-300" aria-label="Buka navigasi">
+                            <span aria-hidden="true">☰</span>
+                        </button>
+                    </div>
                 </div>
 
                 <div x-data="{ open: false }" @toggle-mobile-menu.window="open = !open" x-cloak x-show="open" x-transition.opacity class="border-t border-zinc-200 bg-white px-4 pb-5 pt-4 lg:hidden dark:border-zinc-800 dark:bg-zinc-950">
@@ -77,7 +85,11 @@
                             <label for="mobile-search" class="sr-only">Cari produk</label>
                             <input id="mobile-search" type="search" name="q" value="{{ $searchQuery ?? '' }}" placeholder="Cari produk..." class="h-11 w-full rounded-full border border-zinc-300 bg-zinc-50 px-4 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 focus:border-red-600 focus:ring-2 focus:ring-red-600/20 dark:border-zinc-700 dark:bg-zinc-900 dark:text-white dark:placeholder:text-zinc-400">
                         </form>
-                        <a href="{{ route('login') }}" class="mt-2 rounded-full bg-red-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-800">Masuk</a>
+                        @auth
+                            <a href="{{ route('dashboard') }}" class="mt-2 rounded-full bg-red-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-800">Dashboard</a>
+                        @else
+                            <a href="{{ route('login') }}" class="mt-2 rounded-full bg-red-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-800">Login</a>
+                        @endauth
                         <div x-data="{ open: false }" class="mt-2">
                             <button type="button" @click="open = !open" @keydown.escape.window="open = false" :aria-expanded="open.toString()" aria-controls="mobile-cart-menu" class="flex w-full items-center justify-between rounded-full border border-zinc-300 px-4 py-3 text-sm font-semibold text-zinc-800 dark:border-zinc-700 dark:text-zinc-100">
                                 Keranjang

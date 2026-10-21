@@ -11,6 +11,7 @@
         <link rel="preconnect" href="https://fonts.bunny.net">
         <link href="https://fonts.bunny.net/css?family=figtree:400,500,600,700&display=swap" rel="stylesheet">
 
+        @include('components.theme-init')
         @vite(['resources/css/app.css', 'resources/js/app.js'])
     </head>
     <body class="bg-zinc-100 font-sans text-zinc-900 antialiased dark:bg-zinc-950 dark:text-zinc-100">
@@ -43,11 +44,14 @@
                             Dashboard
                         </a>
 
-                        <div class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-500" aria-disabled="true">
+                        <a href="{{ route('admin.categories.index') }}" @click="sidebarOpen = false" @class([
+                            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
+                            'bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300' => request()->routeIs('admin.categories.*'),
+                            'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white' => ! request()->routeIs('admin.categories.*'),
+                        ]) aria-current="{{ request()->routeIs('admin.categories.*') ? 'page' : 'false' }}">
                             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span class="flex-1">Kategori</span>
-                            <span class="text-[10px] font-medium">Segera</span>
-                        </div>
+                            Kategori
+                        </a>
                         <div class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-500" aria-disabled="true">
                             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3.5 7 8.5-4 8.5 4v10L12 21l-8.5-4V7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3.8 7.2 8.2 4 8.2-4M12 11.5V21" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                             <span class="flex-1">Produk</span>
@@ -86,21 +90,24 @@
                         </div>
                     </div>
 
-                    <div class="relative" @click.outside="accountOpen = false">
-                        <button type="button" @click="accountOpen = !accountOpen" :aria-expanded="accountOpen.toString()" aria-controls="admin-account-menu" class="flex items-center gap-3 rounded-full p-1.5 pr-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-900">
-                            <span class="flex size-9 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-800 dark:bg-red-950 dark:text-red-300">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
-                            <span class="hidden max-w-40 text-left sm:block">
-                                <span class="block truncate text-sm font-semibold text-zinc-800 dark:text-zinc-100">{{ auth()->user()->name }}</span>
-                                <span class="block text-xs text-zinc-500 dark:text-zinc-400">Administrator</span>
-                            </span>
-                            <svg class="hidden size-4 text-zinc-500 sm:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
-                        </button>
-                        <div id="admin-account-menu" x-cloak x-show="accountOpen" x-transition.opacity class="absolute right-0 top-full mt-2 w-52 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg shadow-zinc-900/10 dark:border-zinc-700 dark:bg-zinc-900">
-                            <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Pengaturan akun</a>
-                            <form method="POST" action="{{ route('logout') }}">
-                                @csrf
-                                <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-red-700 transition hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40">Keluar</button>
-                            </form>
+                    <div class="flex items-center gap-2">
+                        <x-theme-toggle />
+                        <div class="relative" @click.outside="accountOpen = false">
+                            <button type="button" @click="accountOpen = !accountOpen" :aria-expanded="accountOpen.toString()" aria-controls="admin-account-menu" class="flex items-center gap-3 rounded-full p-1.5 pr-2 transition hover:bg-zinc-100 dark:hover:bg-zinc-900">
+                                <span class="flex size-9 items-center justify-center rounded-full bg-red-100 text-sm font-bold text-red-800 dark:bg-red-950 dark:text-red-300">{{ mb_strtoupper(mb_substr(auth()->user()->name, 0, 1)) }}</span>
+                                <span class="hidden max-w-40 text-left sm:block">
+                                    <span class="block truncate text-sm font-semibold text-zinc-800 dark:text-zinc-100">{{ auth()->user()->name }}</span>
+                                    <span class="block text-xs text-zinc-500 dark:text-zinc-400">Administrator</span>
+                                </span>
+                                <svg class="hidden size-4 text-zinc-500 sm:block" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M5.22 7.47a.75.75 0 0 1 1.06 0L10 11.19l3.72-3.72a.75.75 0 1 1 1.06 1.06l-4.25 4.25a.75.75 0 0 1-1.06 0L5.22 8.53a.75.75 0 0 1 0-1.06Z" clip-rule="evenodd"/></svg>
+                            </button>
+                            <div id="admin-account-menu" x-cloak x-show="accountOpen" x-transition.opacity class="absolute right-0 top-full mt-2 w-52 rounded-xl border border-zinc-200 bg-white p-2 shadow-lg shadow-zinc-900/10 dark:border-zinc-700 dark:bg-zinc-900">
+                                <a href="{{ route('profile.edit') }}" class="block rounded-lg px-3 py-2 text-sm text-zinc-700 transition hover:bg-zinc-100 dark:text-zinc-200 dark:hover:bg-zinc-800">Pengaturan akun</a>
+                                <form method="POST" action="{{ route('logout') }}">
+                                    @csrf
+                                    <button type="submit" class="w-full rounded-lg px-3 py-2 text-left text-sm font-medium text-red-700 transition hover:bg-red-50 dark:text-red-300 dark:hover:bg-red-950/40">Keluar</button>
+                                </form>
+                            </div>
                         </div>
                     </div>
                 </header>

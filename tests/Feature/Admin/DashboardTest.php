@@ -11,6 +11,7 @@ test('verified users can view the admin dashboard and recent registered users', 
     $response = $this->actingAs($user)->get(route('dashboard'));
 
     $response->assertOk()
+        ->assertSee('data-theme-toggle')
         ->assertSee('Dashboard')
         ->assertSee('Pengguna terdaftar')
         ->assertSee('Admin Store')
