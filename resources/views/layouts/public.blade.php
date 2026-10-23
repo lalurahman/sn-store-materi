@@ -51,6 +51,13 @@
                             <a href="{{ route('dashboard') }}" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Login</a>
+                            <a href="{{ route('register') }}" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Register</a>
+                        @endauth
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}">
+                                @csrf
+                                <button type="submit" class="rounded-full px-4 py-2 text-sm font-semibold text-zinc-700 transition hover:bg-zinc-100 hover:text-red-700 dark:text-zinc-200 dark:hover:bg-zinc-800 dark:hover:text-red-300">Logout</button>
+                            </form>
                         @endauth
                         <div x-data="{ open: false }" class="relative">
                             <button type="button" @click="open = !open" @keydown.escape.window="open = false" :aria-expanded="open.toString()" aria-controls="cart-menu" class="flex items-center gap-2 rounded-full bg-red-700 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-red-800 active:scale-[0.98]">
@@ -89,6 +96,13 @@
                             <a href="{{ route('dashboard') }}" class="mt-2 rounded-full bg-red-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-800">Dashboard</a>
                         @else
                             <a href="{{ route('login') }}" class="mt-2 rounded-full bg-red-700 px-4 py-3 text-center text-sm font-semibold text-white transition hover:bg-red-800">Login</a>
+                            <a href="{{ route('register') }}" class="mt-2 rounded-full border border-zinc-300 px-4 py-3 text-center text-sm font-semibold text-zinc-700 transition hover:border-red-300 hover:text-red-700 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-red-700 dark:hover:text-red-300">Register</a>
+                        @endauth
+                        @auth
+                            <form method="POST" action="{{ route('logout') }}" class="mt-2">
+                                @csrf
+                                <button type="submit" class="w-full rounded-full border border-zinc-300 px-4 py-3 text-sm font-semibold text-zinc-700 transition hover:border-red-300 hover:text-red-700 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-red-700 dark:hover:text-red-300">Logout</button>
+                            </form>
                         @endauth
                         <div x-data="{ open: false }" class="mt-2">
                             <button type="button" @click="open = !open" @keydown.escape.window="open = false" :aria-expanded="open.toString()" aria-controls="mobile-cart-menu" class="flex w-full items-center justify-between rounded-full border border-zinc-300 px-4 py-3 text-sm font-semibold text-zinc-800 dark:border-zinc-700 dark:text-zinc-100">

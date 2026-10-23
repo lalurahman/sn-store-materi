@@ -1,12 +1,16 @@
 <?php
 
 use App\Models\User;
+use Database\Seeders\RolesAndPermissionsSeeder;
 
 test('verified users can view dummy product, transaction, and user lists', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
     $user = User::factory()->create([
         'name' => 'Admin Khusus',
         'email' => 'admin-khusus@example.test',
     ]);
+    $user->assignRole('admin');
 
     $pages = [
         [
@@ -46,5 +50,18 @@ test('guests are redirected to login when opening dummy admin lists', function (
     foreach (['admin.products.index', 'admin.transactions.index', 'admin.users.index'] as $routeName) {
         $this->get(route($routeName))
             ->assertRedirect(route('login'));
+    }
+});
+
+test('customers are redirected to the public page from admin module routes', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $customer = User::factory()->create();
+    $customer->assignRole('customer');
+
+    foreach (['admin.products.index', 'admin.transactions.index', 'admin.users.index'] as $routeName) {
+        $this->actingAs($customer)
+            ->get(route($routeName))
+            ->assertRedirect(route('home'));
     }
 });

@@ -14,8 +14,12 @@ it('shows login links to guests in the public navigation', function () {
     $response->assertOk()
         ->assertSee('Login')
         ->assertSee('href="'.route('login').'"', escape: false);
+    $response->assertSee('Register')
+        ->assertSee('href="'.route('register').'"', escape: false)
+        ->assertDontSee('Logout');
 
     expect(substr_count($response->getContent(), 'href="'.route('login').'"'))->toBe(2);
+    expect(substr_count($response->getContent(), 'href="'.route('register').'"'))->toBe(2);
 });
 
 it('shows dashboard links to authenticated users in the public navigation', function () {
@@ -26,9 +30,13 @@ it('shows dashboard links to authenticated users in the public navigation', func
     $response->assertOk()
         ->assertSee('Dashboard')
         ->assertSee('href="'.route('dashboard').'"', escape: false)
+        ->assertSee('Logout')
+        ->assertSee('action="'.route('logout').'"', escape: false)
+        ->assertDontSee('Register')
         ->assertDontSee('href="'.route('login').'"', escape: false);
 
     expect(substr_count($response->getContent(), 'href="'.route('dashboard').'"'))->toBe(2);
+    expect(substr_count($response->getContent(), 'action="'.route('logout').'"'))->toBe(2);
 });
 
 it('renders the storefront with ten latest products', function () {

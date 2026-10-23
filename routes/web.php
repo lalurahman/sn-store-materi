@@ -7,15 +7,16 @@ use App\Http\Controllers\Admin\TransactionController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Middleware\EnsureAdmin;
 use Illuminate\Support\Facades\Route;
 
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
+    ->middleware(['auth', 'verified', EnsureAdmin::class])
     ->name('dashboard');
 
-Route::middleware(['auth', 'verified'])
+Route::middleware(['auth', 'verified', EnsureAdmin::class])
     ->prefix('admin')
     ->name('admin.')
     ->group(function () {
