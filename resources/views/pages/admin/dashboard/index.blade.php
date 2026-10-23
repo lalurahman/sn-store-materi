@@ -22,39 +22,39 @@
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <p class="text-sm font-medium text-zinc-600 dark:text-zinc-300">Total produk</p>
-                        <p class="mt-4 text-xl font-bold tracking-tight text-zinc-950 dark:text-white">Belum tersedia</p>
+                        <p class="mt-4 text-xl font-bold tracking-tight text-zinc-950 dark:text-white">Data contoh</p>
                     </div>
                     <span class="flex size-10 items-center justify-center rounded-xl bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
                         <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3.5 7 8.5-4 8.5 4v10L12 21l-8.5-4V7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3.8 7.2 8.2 4 8.2-4M12 11.5V21" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                     </span>
                 </div>
-                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Modul produk belum tersedia</p>
+                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Pratinjau produk tersedia di menu Produk</p>
             </article>
 
             <article class="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <p class="text-sm font-medium text-zinc-600 dark:text-zinc-300">Kategori</p>
-                        <p class="mt-4 text-xl font-bold tracking-tight text-zinc-950 dark:text-white">Belum tersedia</p>
+                        <p class="mt-4 text-xl font-bold tracking-tight text-zinc-950 dark:text-white">Data contoh</p>
                     </div>
                     <span class="flex size-10 items-center justify-center rounded-xl bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
                         <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </span>
                 </div>
-                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Modul kategori belum tersedia</p>
+                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Pratinjau kategori tersedia di menu Kategori</p>
             </article>
 
             <article class="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
                 <div class="flex items-start justify-between gap-3">
                     <div>
                         <p class="text-sm font-medium text-zinc-600 dark:text-zinc-300">Transaksi</p>
-                        <p class="mt-4 text-xl font-bold tracking-tight text-zinc-950 dark:text-white">Belum tersedia</p>
+                        <p class="mt-4 text-xl font-bold tracking-tight text-zinc-950 dark:text-white">Data contoh</p>
                     </div>
                     <span class="flex size-10 items-center justify-center rounded-xl bg-red-50 text-red-700 dark:bg-red-950/50 dark:text-red-300">
                         <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.7"/></svg>
                     </span>
                 </div>
-                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Modul transaksi belum tersedia</p>
+                <p class="mt-3 text-xs text-zinc-500 dark:text-zinc-400">Pratinjau transaksi tersedia di menu Transaksi</p>
             </article>
 
             <article class="rounded-2xl border border-zinc-200 bg-white p-5 dark:border-zinc-800 dark:bg-zinc-900">
@@ -107,7 +107,7 @@
 
             <aside class="rounded-2xl border border-zinc-200 bg-white p-5 sm:p-6 dark:border-zinc-800 dark:bg-zinc-900">
                 <h2 class="font-semibold text-zinc-950 dark:text-white">Modul toko</h2>
-                <p class="mt-1 text-sm leading-6 text-zinc-500 dark:text-zinc-400">Pengelolaan produk, kategori, dan transaksi akan tersedia di sini.</p>
+                <p class="mt-1 text-sm leading-6 text-zinc-500 dark:text-zinc-400">Produk, kategori, dan transaksi ditampilkan sebagai data contoh.</p>
 
                 <div class="mt-5 grid gap-3">
                     <div class="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/70">
@@ -115,14 +115,14 @@
                             <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3 12 9 5 9-5" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
                         </span>
                         <span class="flex-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">Katalog & kategori</span>
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Segera</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Data contoh</span>
                     </div>
                     <div class="flex items-center gap-3 rounded-xl bg-zinc-50 p-3 dark:bg-zinc-800/70">
                         <span class="flex size-9 items-center justify-center rounded-lg bg-white text-red-700 dark:bg-zinc-900 dark:text-red-300">
                             <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.7"/></svg>
                         </span>
                         <span class="flex-1 text-sm font-medium text-zinc-800 dark:text-zinc-200">Transaksi</span>
-                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Segera</span>
+                        <span class="text-xs text-zinc-500 dark:text-zinc-400">Data contoh</span>
                     </div>
                     <a href="{{ route('profile.edit') }}" class="flex items-center justify-between gap-3 rounded-xl border border-zinc-200 px-4 py-3 text-sm font-semibold text-zinc-700 transition hover:border-red-300 hover:text-red-700 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-red-700 dark:hover:text-red-300">
                         Kelola profil admin

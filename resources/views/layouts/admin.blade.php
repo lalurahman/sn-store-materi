@@ -52,21 +52,30 @@
                             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m12 3 9 5-9 5-9-5 9-5Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3 12 9 5 9-5M3 16l9 5 9-5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
                             Kategori
                         </a>
-                        <div class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-500" aria-disabled="true">
+                        <a href="{{ route('admin.products.index') }}" @click="sidebarOpen = false" @class([
+                            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
+                            'bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300' => request()->routeIs('admin.products.*'),
+                            'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white' => ! request()->routeIs('admin.products.*'),
+                        ]) aria-current="{{ request()->routeIs('admin.products.*') ? 'page' : 'false' }}">
                             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m3.5 7 8.5-4 8.5 4v10L12 21l-8.5-4V7Z" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/><path d="m3.8 7.2 8.2 4 8.2-4M12 11.5V21" stroke="currentColor" stroke-width="1.7" stroke-linejoin="round"/></svg>
-                            <span class="flex-1">Produk</span>
-                            <span class="text-[10px] font-medium">Segera</span>
-                        </div>
-                        <div class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-500" aria-disabled="true">
+                            Produk
+                        </a>
+                        <a href="{{ route('admin.transactions.index') }}" @click="sidebarOpen = false" @class([
+                            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
+                            'bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300' => request()->routeIs('admin.transactions.*'),
+                            'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white' => ! request()->routeIs('admin.transactions.*'),
+                        ]) aria-current="{{ request()->routeIs('admin.transactions.*') ? 'page' : 'false' }}">
                             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 12h10M4 17h7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="18" cy="16" r="3" stroke="currentColor" stroke-width="1.7"/><path d="m16.8 16 1 1 1.6-2" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span class="flex-1">Transaksi</span>
-                            <span class="text-[10px] font-medium">Segera</span>
-                        </div>
-                        <div class="flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium text-zinc-400 dark:text-zinc-500" aria-disabled="true">
+                            Transaksi
+                        </a>
+                        <a href="{{ route('admin.users.index') }}" @click="sidebarOpen = false" @class([
+                            'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-semibold transition',
+                            'bg-red-50 text-red-800 dark:bg-red-950/40 dark:text-red-300' => request()->routeIs('admin.users.*'),
+                            'text-zinc-600 hover:bg-zinc-100 hover:text-zinc-950 dark:text-zinc-300 dark:hover:bg-zinc-800 dark:hover:text-white' => ! request()->routeIs('admin.users.*'),
+                        ]) aria-current="{{ request()->routeIs('admin.users.*') ? 'page' : 'false' }}">
                             <svg class="size-5 shrink-0" viewBox="0 0 24 24" fill="none" aria-hidden="true"><circle cx="9" cy="8" r="3.5" stroke="currentColor" stroke-width="1.7"/><path d="M3 20v-1.5a6 6 0 0 1 12 0V20H3ZM16 5.2a3.5 3.5 0 0 1 0 6.6M18 14a4.5 4.5 0 0 1 3 4.2V20h-3" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                            <span class="flex-1">User</span>
-                            <span class="text-[10px] font-medium">Segera</span>
-                        </div>
+                            User
+                        </a>
                     </div>
                 </nav>
 

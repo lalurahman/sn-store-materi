@@ -16,7 +16,8 @@ test('verified users can view the admin dashboard and recent registered users', 
         ->assertSee('Pengguna terdaftar')
         ->assertSee('Admin Store')
         ->assertSee('admin@sn-store.test')
-        ->assertSee('Modul produk belum tersedia');
+        ->assertSee('Pratinjau produk tersedia di menu Produk')
+        ->assertSee('Pratinjau transaksi tersedia di menu Transaksi');
 });
 
 test('guests are redirected to login when opening the admin dashboard', function () {
