@@ -3,14 +3,18 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\CategoryRequest;
+use App\Services\CategoryService;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
 
 class CategoryController extends Controller
 {
     public function index(): View
     {
+        $categoryService = app(CategoryService::class);
         return view('pages.admin.categories.index', [
-            'categories' => $this->categories(),
+            'categories' => $categoryService->getAll(),
         ]);
     }
 
@@ -21,48 +25,41 @@ class CategoryController extends Controller
         ]);
     }
 
-    public function edit(string $slug): View
+    public function store(CategoryRequest $request, CategoryService $categoryService): RedirectResponse
     {
-        $category = collect($this->categories())->firstWhere('slug', $slug);
+        $categoryService->create($request->validated());
 
-        abort_unless($category, 404);
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('status', 'Kategori berhasil ditambahkan.');
+    }
 
+    public function edit(string $slug, CategoryService $categoryService): View
+    {
         return view('pages.admin.categories.edit', [
-            'category' => $category,
+            'category' => $categoryService->findBySlug($slug),
         ]);
     }
 
-    /**
-     * @return array<int, array{name: string, slug: string, description: string}>
-     */
-    private function categories(): array
+    public function update(
+        CategoryRequest $request,
+        string $slug,
+        CategoryService $categoryService
+    ): RedirectResponse {
+        $category = $categoryService->findBySlug($slug);
+        $categoryService->update($category, $request->validated());
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('status', 'Kategori berhasil diperbarui.');
+    }
+
+    public function destroy(string $slug, CategoryService $categoryService): RedirectResponse
     {
-        return [
-            [
-                'name' => 'Audio',
-                'slug' => 'audio',
-                'description' => 'Headphone, speaker, dan perangkat audio lainnya.',
-            ],
-            [
-                'name' => 'Smartphone',
-                'slug' => 'smartphone',
-                'description' => 'Ponsel untuk komunikasi dan aktivitas harian.',
-            ],
-            [
-                'name' => 'Laptop',
-                'slug' => 'laptop',
-                'description' => 'Perangkat komputasi untuk kerja dan belajar.',
-            ],
-            [
-                'name' => 'Wearable',
-                'slug' => 'wearable',
-                'description' => 'Jam pintar dan perangkat teknologi yang dikenakan.',
-            ],
-            [
-                'name' => 'Aksesori',
-                'slug' => 'aksesori',
-                'description' => 'Aksesori pendukung perangkat elektronik.',
-            ],
-        ];
+        $categoryService->delete($categoryService->findBySlug($slug));
+
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('status', 'Kategori berhasil dihapus.');
     }
 }

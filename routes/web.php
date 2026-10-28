@@ -22,7 +22,10 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])
     ->group(function () {
         Route::get('/categories', [CategoryController::class, 'index'])->name('categories.index');
         Route::get('/categories/create', [CategoryController::class, 'create'])->name('categories.create');
+        Route::post('/categories', [CategoryController::class, 'store'])->name('categories.store');
         Route::get('/categories/{slug}/edit', [CategoryController::class, 'edit'])->name('categories.edit');
+        Route::put('/categories/{slug}', [CategoryController::class, 'update'])->name('categories.update');
+        Route::delete('/categories/{slug}', [CategoryController::class, 'destroy'])->name('categories.destroy');
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');

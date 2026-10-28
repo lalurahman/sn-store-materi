@@ -11,7 +11,7 @@
                 Kembali ke kategori
             </a>
             <h1 class="mt-4 text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">Edit kategori</h1>
-            <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Pratinjau formulir perubahan untuk kategori {{ $category['name'] }}.</p>
+            <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Ubah informasi kategori {{ $category['name'] }}.</p>
         </section>
 
         <section class="max-w-3xl rounded-2xl border border-zinc-200 bg-white p-5 sm:p-7 dark:border-zinc-800 dark:bg-zinc-900">
