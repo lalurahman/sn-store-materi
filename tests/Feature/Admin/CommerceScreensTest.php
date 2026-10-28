@@ -1,9 +1,11 @@
 <?php
 
+use App\Models\Category;
+use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
 
-test('verified users can view dummy product, transaction, and user lists', function () {
+test('verified users can view product, transaction, and user lists', function () {
     $this->seed(RolesAndPermissionsSeeder::class);
 
     $user = User::factory()->create([
@@ -11,13 +13,26 @@ test('verified users can view dummy product, transaction, and user lists', funct
         'email' => 'admin-khusus@example.test',
     ]);
     $user->assignRole('admin');
+    $category = Category::query()->create([
+        'name' => 'Audio',
+        'slug' => 'audio',
+        'description' => null,
+    ]);
+    Product::query()->create([
+        'category_id' => $category->id,
+        'name' => 'Headphone Nirkabel Sora',
+        'sku' => 'SN-AUD-2401',
+        'price' => 899000,
+        'stock' => 18,
+        'image_path' => 'products/headphone-sora.png',
+    ]);
 
     $pages = [
         [
             'route' => 'admin.products.index',
             'heading' => 'Daftar produk',
             'sample' => 'Headphone Nirkabel Sora',
-            'indicator' => 'produk contoh',
+            'indicator' => '1 produk',
         ],
         [
             'route' => 'admin.transactions.index',

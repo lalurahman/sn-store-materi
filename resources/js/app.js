@@ -41,8 +41,8 @@ document.addEventListener('submit', async (event) => {
     try {
         const isDark = document.documentElement.classList.contains('dark');
         const result = await Swal.fire({
-            title: 'Hapus kategori?',
-            text: `Kategori "${form.dataset.categoryName}" akan dihapus permanen.`,
+            title: form.dataset.confirmTitle ?? 'Hapus kategori?',
+            text: form.dataset.confirmMessage ?? `Kategori "${form.dataset.categoryName}" akan dihapus permanen.`,
             icon: 'warning',
             showCancelButton: true,
             confirmButtonText: 'Ya, hapus',

@@ -27,6 +27,11 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])
         Route::put('/categories/{slug}', [CategoryController::class, 'update'])->name('categories.update');
         Route::delete('/categories/{slug}', [CategoryController::class, 'destroy'])->name('categories.destroy');
         Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+        Route::get('/products/create', [ProductController::class, 'create'])->name('products.create');
+        Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+        Route::get('/products/{product}/edit', [ProductController::class, 'edit'])->name('products.edit');
+        Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
+        Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
     });
