@@ -1,6 +1,8 @@
 <?php
 
 use App\Models\Category;
+use App\Models\Order;
+use App\Models\OrderItem;
 use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\RolesAndPermissionsSeeder;
@@ -18,13 +20,33 @@ test('verified users can view product, transaction, and user lists', function ()
         'slug' => 'audio',
         'description' => null,
     ]);
-    Product::query()->create([
+    $product = Product::query()->create([
         'category_id' => $category->id,
         'name' => 'Headphone Nirkabel Sora',
         'sku' => 'SN-AUD-2401',
         'price' => 899000,
         'stock' => 18,
         'image_path' => 'products/headphone-sora.png',
+    ]);
+    $order = Order::query()->create([
+        'order_number' => 'SN-ADMIN-ORDER',
+        'user_id' => $user->id,
+        'customer_name' => 'Raka Pratama',
+        'customer_phone' => '+628123456789',
+        'customer_email' => 'raka@example.test',
+        'shipping_address' => 'Jl. Merdeka No. 1',
+        'total' => 899000,
+        'status' => 'pending_payment',
+        'payment_status' => 'pending',
+    ]);
+    OrderItem::query()->create([
+        'order_id' => $order->id,
+        'product_id' => $product->id,
+        'product_name' => $product->name,
+        'sku' => $product->sku,
+        'quantity' => 1,
+        'unit_price' => $product->price,
+        'line_total' => $product->price,
     ]);
 
     $pages = [
@@ -37,8 +59,8 @@ test('verified users can view product, transaction, and user lists', function ()
         [
             'route' => 'admin.transactions.index',
             'heading' => 'Daftar transaksi',
-            'sample' => 'INV-2026-1042',
-            'indicator' => 'transaksi contoh',
+            'sample' => 'SN-ADMIN-ORDER',
+            'indicator' => '1 transaksi',
         ],
         [
             'route' => 'admin.users.index',

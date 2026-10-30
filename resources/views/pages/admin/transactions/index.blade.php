@@ -9,10 +9,10 @@
             <div>
                 <p class="text-sm font-medium text-red-700 dark:text-red-400">Operasional toko</p>
                 <h1 class="mt-2 text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">Transaksi</h1>
-                <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Data contoh pesanan untuk pratinjau aktivitas penjualan.</p>
+                <p class="mt-2 text-sm leading-6 text-zinc-600 dark:text-zinc-300">Pesanan yang dibuat pelanggan dari halaman checkout.</p>
             </div>
             <span class="inline-flex w-fit items-center rounded-full bg-red-50 px-3 py-1.5 text-sm font-semibold text-red-800 dark:bg-red-950/50 dark:text-red-300">
-                {{ count($transactions) }} transaksi contoh
+                {{ $transactions->total() }} transaksi
             </span>
         </section>
 
@@ -38,7 +38,7 @@
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                         @forelse ($transactions as $index => $transaction)
                             <tr class="transition hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40">
-                                <td class="px-5 py-4 text-zinc-500 sm:px-6 dark:text-zinc-400">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</td>
+                                <td class="px-5 py-4 text-zinc-500 sm:px-6 dark:text-zinc-400">{{ str_pad((string) ($transactions->firstItem() + $index), 2, '0', STR_PAD_LEFT) }}</td>
                                 <th scope="row" class="px-5 py-4 font-mono text-xs font-semibold text-zinc-900 dark:text-zinc-100">{{ $transaction['number'] }}</th>
                                 <td class="px-5 py-4 font-medium text-zinc-800 dark:text-zinc-200">{{ $transaction['customer'] }}</td>
                                 <td class="px-5 py-4 whitespace-nowrap text-zinc-600 dark:text-zinc-300">{{ date('d/m/Y', strtotime($transaction['date'])) }}</td>
@@ -59,13 +59,18 @@
                             <tr>
                                 <td colspan="7" class="px-6 py-12 text-center">
                                     <p class="font-semibold text-zinc-900 dark:text-white">Belum ada transaksi</p>
-                                    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Data transaksi contoh akan ditampilkan di sini.</p>
+                                    <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Pesanan pelanggan akan ditampilkan di sini.</p>
                                 </td>
                             </tr>
                         @endforelse
                     </tbody>
                 </table>
             </div>
+            @if ($transactions->hasPages())
+                <div class="border-t border-zinc-100 px-5 py-4 sm:px-6 dark:border-zinc-800">
+                    {{ $transactions->links() }}
+                </div>
+            @endif
         </section>
     </div>
 @endsection

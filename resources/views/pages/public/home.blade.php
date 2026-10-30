@@ -16,7 +16,7 @@
                     @endforeach
 
                     <div class="mt-8 flex flex-wrap items-center gap-3">
-                        <a href="#produk" class="inline-flex items-center justify-center rounded-full bg-red-700 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-red-800 active:scale-[0.98]">Belanja sekarang</a>
+                        <a href="{{ route('products.index') }}" class="inline-flex items-center justify-center rounded-full bg-red-700 px-6 py-3 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-red-800 active:scale-[0.98]">Belanja sekarang</a>
                         <a href="#kategori" class="inline-flex items-center justify-center rounded-full border border-zinc-300 px-6 py-3 text-sm font-semibold text-zinc-800 transition hover:border-red-300 hover:text-red-700 active:scale-[0.98] dark:border-zinc-700 dark:text-zinc-100 dark:hover:border-red-700 dark:hover:text-red-300">Jelajahi kategori</a>
                     </div>
 
@@ -47,12 +47,12 @@
                     <h2 class="text-2xl font-bold tracking-tight text-zinc-950 dark:text-white">Jelajahi kategori</h2>
                     <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Temukan perangkat sesuai kebutuhanmu.</p>
                 </div>
-                <a href="#produk" class="text-sm font-semibold text-red-700 transition hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Lihat semua produk <span aria-hidden="true">→</span></a>
+                <a href="{{ route('products.index') }}" class="text-sm font-semibold text-red-700 transition hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Lihat semua produk <span aria-hidden="true">→</span></a>
             </div>
             <div class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-5">
                 @foreach ($categories as $category)
-                    <a href="{{ route('home', ['category' => $category]) }}" class="group rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-5 text-sm font-semibold text-zinc-800 transition hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-300">
-                        {{ $category }}
+                    <a href="{{ route('products.index', ['category' => $category->slug]) }}" class="group rounded-xl border border-zinc-200 bg-zinc-50 px-4 py-5 text-sm font-semibold text-zinc-800 transition hover:border-red-300 hover:bg-red-50 hover:text-red-800 dark:border-zinc-800 dark:bg-zinc-900 dark:text-zinc-100 dark:hover:border-red-800 dark:hover:bg-red-950/30 dark:hover:text-red-300">
+                        {{ $category->name }}
                         <span aria-hidden="true" class="ml-1 inline-block transition group-hover:translate-x-1">↗</span>
                     </a>
                 @endforeach
@@ -66,7 +66,7 @@
                 <h2 class="text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">Produk terbaru</h2>
                 <p class="mt-3 text-sm text-zinc-600 dark:text-zinc-300">
                     @if ($selectedCategory !== '')
-                        Kategori {{ $selectedCategory }}
+                        Kategori {{ $selectedCategoryName }}
                     @elseif ($searchQuery !== '')
                         Hasil pencarian untuk “{{ $searchQuery }}”
                     @else
@@ -90,9 +90,6 @@
                             <p class="text-xs font-medium text-red-700 dark:text-red-400">{{ $product['category'] }}</p>
                             <h3 class="mt-1.5 min-h-11 text-sm font-semibold leading-5 text-zinc-900 dark:text-zinc-100">{{ $product['name'] }}</h3>
                             <p class="mt-2 font-bold text-zinc-950 dark:text-white">Rp{{ number_format($product['price'], 0, ',', '.') }}</p>
-                            @if ($product['original_price'])
-                                <p class="mt-1 text-xs text-zinc-500 line-through dark:text-zinc-400">Rp{{ number_format($product['original_price'], 0, ',', '.') }}</p>
-                            @endif
                         </div>
                     </article>
                 @endforeach
@@ -101,7 +98,7 @@
             <div class="mt-8 rounded-2xl border border-dashed border-zinc-300 px-6 py-12 text-center dark:border-zinc-700">
                 <h3 class="text-lg font-semibold text-zinc-900 dark:text-white">Produk belum ditemukan</h3>
                 <p class="mt-2 text-sm text-zinc-600 dark:text-zinc-300">Coba kata kunci lain atau lihat seluruh pilihan produk.</p>
-                <a href="{{ route('home') }}#produk" class="mt-5 inline-flex rounded-full bg-red-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-800">Lihat semua produk</a>
+                <a href="{{ route('products.index') }}" class="mt-5 inline-flex rounded-full bg-red-700 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-red-800">Lihat semua produk</a>
             </div>
         @endif
     </section>
@@ -112,7 +109,7 @@
                 <h2 class="max-w-xl text-2xl font-bold tracking-tight sm:text-3xl">Siap menemukan perangkat berikutnya?</h2>
                 <p class="mt-3 max-w-xl text-sm leading-6 text-red-100">Jelajahi pilihan elektronik yang pas untuk rutinitasmu.</p>
             </div>
-            <a href="#produk" class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-red-800 transition hover:-translate-y-0.5 hover:bg-red-50 active:scale-[0.98]">Lihat produk</a>
+            <a href="{{ route('products.index') }}" class="inline-flex w-fit items-center justify-center rounded-full bg-white px-6 py-3 text-sm font-semibold text-red-800 transition hover:-translate-y-0.5 hover:bg-red-50 active:scale-[0.98]">Lihat produk</a>
         </div>
     </section>
 @endsection

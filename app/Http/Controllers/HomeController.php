@@ -2,7 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Category;
+use App\Models\Product;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -15,100 +19,38 @@ class HomeController extends Controller
         $selectedCategory = $request->query('category');
         $selectedCategory = is_string($selectedCategory) ? trim($selectedCategory) : '';
 
-        $categories = [
-            'Audio',
-            'Smartphone',
-            'Laptop',
-            'Wearable',
-            'Aksesori',
-        ];
+        $categories = Category::query()
+            ->orderBy('name')
+            ->get(['id', 'name', 'slug']);
+        $selectedCategoryName = $categories->firstWhere('slug', $selectedCategory)?->name ?? $selectedCategory;
 
-        $products = collect([
-            [
-                'name' => 'Headphone Wireless Studio',
-                'category' => 'Audio',
-                'price' => 1299000,
-                'original_price' => 1599000,
-                'image' => 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Smartphone Nova 5G',
-                'category' => 'Smartphone',
-                'price' => 7499000,
-                'original_price' => null,
-                'image' => 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Laptop Air 14 inci',
-                'category' => 'Laptop',
-                'price' => 12499000,
-                'original_price' => 13999000,
-                'image' => 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Jam Pintar Active',
-                'category' => 'Wearable',
-                'price' => 1899000,
-                'original_price' => null,
-                'image' => 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Speaker Bluetooth Portabel',
-                'category' => 'Audio',
-                'price' => 899000,
-                'original_price' => 1099000,
-                'image' => 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Kamera Mirrorless Compact',
-                'category' => 'Aksesori',
-                'price' => 8999000,
-                'original_price' => null,
-                'image' => 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Mouse Wireless Ergonomis',
-                'category' => 'Aksesori',
-                'price' => 429000,
-                'original_price' => 549000,
-                'image' => 'https://images.unsplash.com/photo-1527814050087-3793815479db?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Keyboard Mekanikal Compact',
-                'category' => 'Aksesori',
-                'price' => 979000,
-                'original_price' => null,
-                'image' => 'https://images.unsplash.com/photo-1587829741301-dc798b83add3?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Earbuds True Wireless',
-                'category' => 'Audio',
-                'price' => 799000,
-                'original_price' => 999000,
-                'image' => 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?auto=format&fit=crop&w=800&q=85',
-            ],
-            [
-                'name' => 'Monitor UltraWide 27 inci',
-                'category' => 'Aksesori',
-                'price' => 3299000,
-                'original_price' => null,
-                'image' => 'https://images.unsplash.com/photo-1527443224154-c4a3942d3acf?auto=format&fit=crop&w=800&q=85',
-            ],
-        ]);
-
-        $products = $products
-            ->filter(function (array $product) use ($searchQuery, $selectedCategory): bool {
-                $matchesSearch = $searchQuery === ''
-                    || str_contains(
-                        mb_strtolower($product['name'].' '.$product['category']),
-                        mb_strtolower($searchQuery),
-                    );
-                $matchesCategory = $selectedCategory === ''
-                    || $product['category'] === $selectedCategory;
-
-                return $matchesSearch && $matchesCategory;
+        $products = Product::query()
+            ->with('category')
+            ->when($searchQuery !== '', function (Builder $query) use ($searchQuery): void {
+                $query->where(function (Builder $query) use ($searchQuery): void {
+                    $query->where('name', 'like', '%'.$searchQuery.'%')
+                        ->orWhereHas(
+                            'category',
+                            fn (Builder $categoryQuery): Builder => $categoryQuery
+                                ->where('name', 'like', '%'.$searchQuery.'%'),
+                        );
+                });
             })
-            ->values();
+            ->when($selectedCategory !== '', function (Builder $query) use ($selectedCategory): void {
+                $query->whereHas(
+                    'category',
+                    fn (Builder $categoryQuery): Builder => $categoryQuery->where('slug', $selectedCategory),
+                );
+            })
+            ->latest()
+            ->limit(10)
+            ->get(['id', 'category_id', 'name', 'price', 'image_path'])
+            ->map(fn (Product $product): array => [
+                'name' => $product->name,
+                'category' => $product->category->name,
+                'price' => $product->price,
+                'image' => Storage::disk('public')->url($product->image_path),
+            ]);
 
         $slides = [
             [
@@ -136,6 +78,7 @@ class HomeController extends Controller
             'products' => $products,
             'searchQuery' => $searchQuery,
             'selectedCategory' => $selectedCategory,
+            'selectedCategoryName' => $selectedCategoryName,
             'slides' => $slides,
         ]);
     }
