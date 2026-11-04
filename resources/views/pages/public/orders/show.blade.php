@@ -1,11 +1,14 @@
 @extends('layouts.public')
 
-@section('title', 'Pesanan '.$order->order_number.' | SN Store')
+@section('title', 'Pesanan ' . $order->order_number . ' | SN Store')
 
 @section('content')
     <section class="mx-auto max-w-3xl px-4 py-12 sm:px-6 lg:px-8">
         <div class="rounded-3xl border border-zinc-200 bg-white p-6 sm:p-9 dark:border-zinc-800 dark:bg-zinc-900">
-            <div class="flex size-12 items-center justify-center rounded-full bg-amber-100 text-xl text-amber-800 dark:bg-amber-950/60 dark:text-amber-300" aria-hidden="true">…</div>
+            <div
+                class="flex size-12 items-center justify-center rounded-full bg-amber-100 text-xl text-amber-800 dark:bg-amber-950/60 dark:text-amber-300"
+                aria-hidden="true"
+            >…</div>
             <p class="mt-6 text-sm font-semibold text-red-700 dark:text-red-400">Pesanan berhasil dibuat</p>
             <h1 class="mt-2 text-3xl font-bold tracking-tight text-zinc-950 dark:text-white">
                 @if ($order->payment_status === 'paid')
@@ -22,18 +25,21 @@
                 @elseif ($order->payment_status === 'failed')
                     Pembayaran tidak berhasil. Silakan buat pesanan baru jika ingin mencoba kembali.
                 @else
-                    Selesaikan pembayaran melalui Midtrans. Status pesanan akan diperbarui setelah notifikasi pembayaran diterima.
+                    Selesaikan pembayaran melalui Midtrans. Status pesanan akan diperbarui setelah notifikasi pembayaran
+                    diterima.
                 @endif
             </p>
 
             <dl class="mt-7 grid gap-4 rounded-2xl bg-zinc-50 p-4 sm:grid-cols-2 dark:bg-zinc-950">
                 <div>
                     <dt class="text-xs text-zinc-500 dark:text-zinc-400">Nomor pesanan</dt>
-                    <dd class="mt-1 font-mono text-sm font-semibold text-zinc-900 dark:text-white">{{ $order->order_number }}</dd>
+                    <dd class="mt-1 font-mono text-sm font-semibold text-zinc-900 dark:text-white">{{ $order->order_number }}
+                    </dd>
                 </div>
                 <div>
                     <dt class="text-xs text-zinc-500 dark:text-zinc-400">Status pembayaran</dt>
-                    <dd class="mt-1 text-sm font-semibold {{ $order->payment_status === 'paid' ? 'text-emerald-700 dark:text-emerald-300' : ($order->payment_status === 'failed' ? 'text-red-700 dark:text-red-300' : 'text-amber-800 dark:text-amber-300') }}">
+                    <dd
+                        class="mt-1 text-sm font-semibold {{ $order->payment_status === 'paid' ? 'text-emerald-700 dark:text-emerald-300' : ($order->payment_status === 'failed' ? 'text-red-700 dark:text-red-300' : 'text-amber-800 dark:text-amber-300') }}">
                         {{ $order->payment_status === 'paid' ? 'Lunas' : ($order->payment_status === 'failed' ? 'Gagal' : 'Menunggu pembayaran') }}
                     </dd>
                 </div>
@@ -42,8 +48,14 @@
                     <dd class="mt-1 text-sm font-medium text-zinc-900 dark:text-white">{{ $order->customer_name }}</dd>
                 </div>
                 <div>
+                    <dt class="text-xs text-zinc-500 dark:text-zinc-400">Ongkos kirim</dt>
+                    <dd class="mt-1 text-sm font-medium text-zinc-900 dark:text-white">
+                        Rp{{ number_format((float) $order->shipping_cost, 0, ',', '.') }}@if ($order->shipping_courier) ({{ strtoupper($order->shipping_courier) }} {{ $order->shipping_service }})@endif</dd>
+                </div>
+                <div>
                     <dt class="text-xs text-zinc-500 dark:text-zinc-400">Total pesanan</dt>
-                    <dd class="mt-1 text-sm font-bold text-zinc-900 dark:text-white">Rp{{ number_format((float) $order->total, 0, ',', '.') }}</dd>
+                    <dd class="mt-1 text-sm font-bold text-zinc-900 dark:text-white">
+                        Rp{{ number_format((float) $order->total, 0, ',', '.') }}</dd>
                 </div>
                 <div>
                     <dt class="text-xs text-zinc-500 dark:text-zinc-400">Nomor HP</dt>
@@ -55,7 +67,14 @@
                 </div>
                 <div class="sm:col-span-2">
                     <dt class="text-xs text-zinc-500 dark:text-zinc-400">Alamat pengiriman</dt>
-                    <dd class="mt-1 whitespace-pre-line text-sm font-medium text-zinc-900 dark:text-white">{{ $order->shipping_address }}</dd>
+                    <dd class="mt-1 whitespace-pre-line text-sm font-medium text-zinc-900 dark:text-white">
+                        {{ $order->shipping_address }}</dd>
+                    @if ($order->shipping_province_name)
+                        <dd class="mt-1 text-sm font-medium text-zinc-900 dark:text-white">
+                            {{ $order->shipping_village_name }}, {{ $order->shipping_district_name }},
+                            {{ $order->shipping_city_name }}, {{ $order->shipping_province_name }}
+                            {{ $order->shipping_postal_code }}</dd>
+                    @endif
                 </div>
             </dl>
 
@@ -66,9 +85,11 @@
                         <div class="flex items-center justify-between gap-4 py-3 text-sm">
                             <div>
                                 <p class="font-medium text-zinc-900 dark:text-white">{{ $item->product_name }}</p>
-                                <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ $item->quantity }} × Rp{{ number_format((float) $item->unit_price, 0, ',', '.') }}</p>
+                                <p class="mt-1 text-xs text-zinc-500 dark:text-zinc-400">{{ $item->quantity }} ×
+                                    Rp{{ number_format((float) $item->unit_price, 0, ',', '.') }}</p>
                             </div>
-                            <span class="whitespace-nowrap font-semibold text-zinc-900 dark:text-white">Rp{{ number_format((float) $item->line_total, 0, ',', '.') }}</span>
+                            <span
+                                class="whitespace-nowrap font-semibold text-zinc-900 dark:text-white">Rp{{ number_format((float) $item->line_total, 0, ',', '.') }}</span>
                         </div>
                     @endforeach
                 </div>
@@ -76,15 +97,29 @@
 
             @if ($order->payment_status === 'pending' && $order->snap_token)
                 <div class="mt-7 flex flex-wrap items-center gap-3">
-                    <button id="pay-order" type="button" class="inline-flex rounded-full bg-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-800">
+                    <button
+                        id="pay-order"
+                        type="button"
+                        class="inline-flex rounded-full bg-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-800"
+                    >
                         Bayar dengan Midtrans
                     </button>
-                    <a href="{{ $order->payment_url }}" class="inline-flex rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:border-red-300 hover:text-red-700 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-red-700 dark:hover:text-red-300">
+                    <a
+                        href="{{ $order->payment_url }}"
+                        class="inline-flex rounded-full border border-zinc-300 px-5 py-3 text-sm font-semibold text-zinc-700 transition hover:border-red-300 hover:text-red-700 dark:border-zinc-700 dark:text-zinc-200 dark:hover:border-red-700 dark:hover:text-red-300"
+                    >
                         Buka halaman pembayaran
                     </a>
                 </div>
-                <p id="payment-error" role="status" class="mt-3 hidden text-sm text-red-700 dark:text-red-400"></p>
-                <script src="{{ config('services.midtrans.snap_js_url') }}" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+                <p
+                    id="payment-error"
+                    role="status"
+                    class="mt-3 hidden text-sm text-red-700 dark:text-red-400"
+                ></p>
+                <script
+                    src="{{ config('services.midtrans.snap_js_url') }}"
+                    data-client-key="{{ config('services.midtrans.client_key') }}"
+                ></script>
                 <script>
                     const paymentResultUrl = @js(route('orders.show', $order->order_number));
                     const paymentError = document.getElementById('payment-error');
@@ -109,7 +144,10 @@
                 </script>
             @endif
 
-            <a href="{{ route('products.index') }}" class="mt-7 inline-flex rounded-full bg-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-800">Kembali belanja</a>
+            <a
+                href="{{ route('products.index') }}"
+                class="mt-7 inline-flex rounded-full bg-red-700 px-5 py-3 text-sm font-semibold text-white transition hover:bg-red-800"
+            >Kembali belanja</a>
         </div>
     </section>
 @endsection

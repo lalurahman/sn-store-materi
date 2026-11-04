@@ -27,6 +27,10 @@ Route::middleware('auth')->group(function () {
     Route::delete('/cart/items/{cartItem}', [CartController::class, 'destroy'])->name('cart.items.destroy');
     Route::get('/checkout', [CheckoutController::class, 'create'])->name('checkout.create');
     Route::post('/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/checkout/regions/{provinceCode}/cities', [CheckoutController::class, 'cities'])->name('checkout.regions.cities');
+    Route::get('/checkout/regions/{cityCode}/districts', [CheckoutController::class, 'districts'])->name('checkout.regions.districts');
+    Route::post('/checkout/shipping-costs', [CheckoutController::class, 'shippingCosts'])->name('checkout.shipping-costs');
+    Route::get('/checkout/regions/{districtCode}/villages', [CheckoutController::class, 'villages'])->name('checkout.regions.villages');
     Route::get('/orders/{orderNumber}', [OrderController::class, 'show'])->name('orders.show');
 });
 
@@ -51,6 +55,7 @@ Route::middleware(['auth', 'verified', EnsureAdmin::class])
         Route::put('/products/{product}', [ProductController::class, 'update'])->name('products.update');
         Route::delete('/products/{product}', [ProductController::class, 'destroy'])->name('products.destroy');
         Route::get('/transactions', [TransactionController::class, 'index'])->name('transactions.index');
+        Route::get('/transactions/{orderNumber}', [TransactionController::class, 'show'])->name('transactions.show');
         Route::get('/users', [UserController::class, 'index'])->name('users.index');
     });
 

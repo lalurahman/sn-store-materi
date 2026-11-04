@@ -32,19 +32,20 @@
                             <th scope="col" class="px-5 py-3.5">Tanggal</th>
                             <th scope="col" class="px-5 py-3.5">Item</th>
                             <th scope="col" class="px-5 py-3.5">Total</th>
-                            <th scope="col" class="px-5 py-3.5 sm:px-6">Status</th>
+                            <th scope="col" class="px-5 py-3.5">Status</th>
+                            <th scope="col" class="px-5 py-3.5 sm:px-6"><span class="sr-only">Aksi</span></th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-zinc-100 dark:divide-zinc-800">
                         @forelse ($transactions as $index => $transaction)
                             <tr class="transition hover:bg-zinc-50/80 dark:hover:bg-zinc-800/40">
                                 <td class="px-5 py-4 text-zinc-500 sm:px-6 dark:text-zinc-400">{{ str_pad((string) ($transactions->firstItem() + $index), 2, '0', STR_PAD_LEFT) }}</td>
-                                <th scope="row" class="px-5 py-4 font-mono text-xs font-semibold text-zinc-900 dark:text-zinc-100">{{ $transaction['number'] }}</th>
+                                <th scope="row" class="px-5 py-4 font-mono text-xs font-semibold text-zinc-900 dark:text-zinc-100"><a href="{{ $transaction['url'] }}" class="transition hover:text-red-700 dark:hover:text-red-300">{{ $transaction['number'] }}</a></th>
                                 <td class="px-5 py-4 font-medium text-zinc-800 dark:text-zinc-200">{{ $transaction['customer'] }}</td>
                                 <td class="px-5 py-4 whitespace-nowrap text-zinc-600 dark:text-zinc-300">{{ date('d/m/Y', strtotime($transaction['date'])) }}</td>
                                 <td class="px-5 py-4 text-zinc-600 dark:text-zinc-300">{{ $transaction['items'] }} item</td>
                                 <td class="px-5 py-4 whitespace-nowrap font-medium text-zinc-800 dark:text-zinc-200">Rp {{ number_format($transaction['total'], 0, ',', '.') }}</td>
-                                <td class="px-5 py-4 sm:px-6">
+                                <td class="px-5 py-4">
                                     <span @class([
                                         'inline-flex rounded-full px-2.5 py-1 text-xs font-semibold',
                                         'bg-green-50 text-green-800 dark:bg-green-950/50 dark:text-green-300' => $transaction['status'] === 'Selesai' || $transaction['status'] === 'Dikirim',
@@ -54,10 +55,13 @@
                                         {{ $transaction['status'] }}
                                     </span>
                                 </td>
+                                <td class="px-5 py-4 text-right sm:px-6">
+                                    <a href="{{ $transaction['url'] }}" class="text-sm font-semibold text-red-700 hover:text-red-800 dark:text-red-400 dark:hover:text-red-300">Detail</a>
+                                </td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center">
+                                <td colspan="8" class="px-6 py-12 text-center">
                                     <p class="font-semibold text-zinc-900 dark:text-white">Belum ada transaksi</p>
                                     <p class="mt-1 text-sm text-zinc-500 dark:text-zinc-400">Pesanan pelanggan akan ditampilkan di sini.</p>
                                 </td>

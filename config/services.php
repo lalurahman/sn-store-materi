@@ -48,4 +48,12 @@ return [
             : 'https://app.sandbox.midtrans.com/snap/snap.js',
     ],
 
+    'rajaongkir' => [
+        'key' => env('RAJAONGKIR_API_KEY'),
+        'base_url' => env('RAJAONGKIR_BASE_URL', 'https://rajaongkir.komerce.id/api/v1'),
+        'origin_id' => env('RAJAONGKIR_ORIGIN_ID', 79234),
+        'item_weight' => (int) env('RAJAONGKIR_ITEM_WEIGHT', 500),
+        'couriers' => ['jne', 'sicepat', 'jnt'],
+    ],
+
 ];

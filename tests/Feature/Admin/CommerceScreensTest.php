@@ -102,3 +102,55 @@ test('customers are redirected to the public page from admin module routes', fun
             ->assertRedirect(route('home'));
     }
 });
+
+test('admins can view a transaction detail with items and shipping region', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $admin = User::factory()->create();
+    $admin->assignRole('admin');
+    $order = Order::query()->create([
+        'order_number' => 'SN-DETAIL-001',
+        'customer_name' => 'Rina Pembeli',
+        'customer_phone' => '08123456789',
+        'customer_email' => 'rina@example.test',
+        'shipping_address' => 'Jl. Melati No. 3',
+        'shipping_province_name' => 'NUSA TENGGARA BARAT',
+        'shipping_city_name' => 'MATARAM',
+        'shipping_postal_code' => '83121',
+        'total' => 900000,
+    ]);
+    OrderItem::query()->create([
+        'order_id' => $order->id,
+        'product_id' => null,
+        'product_name' => 'Speaker Detail',
+        'sku' => 'SN-DETAIL-SKU',
+        'quantity' => 1,
+        'unit_price' => 900000,
+        'line_total' => 900000,
+    ]);
+
+    $this->actingAs($admin)
+        ->get(route('admin.transactions.show', 'SN-DETAIL-001'))
+        ->assertOk()
+        ->assertSee('Rina Pembeli')
+        ->assertSee('Speaker Detail')
+        ->assertSee('SN-DETAIL-SKU')
+        ->assertSee('MATARAM')
+        ->assertSee('83121')
+        ->assertSee('Rp 900.000');
+
+    $this->actingAs($admin)
+        ->get(route('admin.transactions.show', 'SN-MISSING'))
+        ->assertNotFound();
+});
+
+test('non-admin users cannot view a transaction detail', function () {
+    $this->seed(RolesAndPermissionsSeeder::class);
+
+    $customer = User::factory()->create();
+    $customer->assignRole('customer');
+
+    $this->actingAs($customer)
+        ->get(route('admin.transactions.show', 'SN-ANY'))
+        ->assertRedirect();
+});

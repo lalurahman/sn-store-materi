@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
+use Laravolt\Indonesia\Models\Village;
 
 class CartService
 {
@@ -104,14 +105,25 @@ class CartService
     }
 
     /**
-     * @param  array{name: string, phone: string, email: string, address: string}  $customer
+     * @param  array{name: string, phone: string, email: string, address: string, province_code: string, city_code: string, district_code: string, village_code: string, postal_code: string, shipping_option: string}  $customer
      */
     public function checkout(
         User $user,
         array $customer,
         MidtransPaymentService $midtransPaymentService,
+        RajaOngkirService $rajaOngkirService,
     ): Order {
-        $order = DB::transaction(function () use ($user, $customer, $midtransPaymentService): Order {
+        $village = Village::query()
+            ->with('district.city.province')
+            ->where('code', $customer['village_code'])
+            ->firstOrFail();
+        $shippingOption = $rajaOngkirService->findShippingOption(
+            $village,
+            $rajaOngkirService->weightForQuantity($this->getCartSummary($user)['itemCount']),
+            $customer['shipping_option'],
+        );
+
+        $order = DB::transaction(function () use ($user, $customer, $midtransPaymentService, $village, $shippingOption): Order {
             $cartItems = CartItem::query()
                 ->whereBelongsTo($user)
                 ->with('product')
@@ -153,7 +165,20 @@ class CartService
                 'customer_phone' => $customer['phone'],
                 'customer_email' => $customer['email'],
                 'shipping_address' => $customer['address'],
-                'total' => $this->formatCents($subtotalInCents),
+                'shipping_province_code' => $customer['province_code'],
+                'shipping_province_name' => $village->district->city->province->name,
+                'shipping_city_code' => $customer['city_code'],
+                'shipping_city_name' => $village->district->city->name,
+                'shipping_district_code' => $customer['district_code'],
+                'shipping_district_name' => $village->district->name,
+                'shipping_village_code' => $customer['village_code'],
+                'shipping_village_name' => $village->name,
+                'shipping_postal_code' => $customer['postal_code'],
+                'shipping_cost' => $this->formatCents($shippingOption['cost'] * 100),
+                'shipping_courier' => $shippingOption['courier'],
+                'shipping_service' => $shippingOption['service'],
+                'shipping_etd' => $shippingOption['etd'] !== '' ? $shippingOption['etd'] : null,
+                'total' => $this->formatCents($subtotalInCents + $shippingOption['cost'] * 100),
                 'status' => 'pending_payment',
                 'payment_status' => 'pending',
             ]);

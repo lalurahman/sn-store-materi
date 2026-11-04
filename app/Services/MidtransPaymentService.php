@@ -31,6 +31,16 @@ class MidtransPaymentService
         })->all();
 
         $total = $this->integerRupiahAmount((string) $order->total);
+        $shippingCost = $this->integerRupiahAmount((string) $order->shipping_cost);
+
+        if ($shippingCost > 0) {
+            $itemDetails[] = [
+                'id' => 'SHIPPING',
+                'price' => $shippingCost,
+                'quantity' => 1,
+                'name' => mb_substr('Ongkir '.strtoupper((string) $order->shipping_courier).' '.$order->shipping_service, 0, 50),
+            ];
+        }
 
         if (array_sum(array_map(
             fn (array $item): int => $item['price'] * $item['quantity'],
@@ -51,7 +61,14 @@ class MidtransPaymentService
                 'shipping_address' => [
                     'first_name' => $order->customer_name,
                     'phone' => $order->customer_phone,
-                    'address' => $order->shipping_address,
+                    'address' => implode(', ', array_filter([
+                        $order->shipping_address,
+                        $order->shipping_village_name,
+                        $order->shipping_district_name,
+                        $order->shipping_city_name,
+                        $order->shipping_province_name,
+                        $order->shipping_postal_code,
+                    ])),
                 ],
             ],
             'item_details' => $itemDetails,

@@ -7,6 +7,54 @@ use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Client\Request;
 use Illuminate\Support\Facades\Http;
+use Laravolt\Indonesia\Models\City;
+use Laravolt\Indonesia\Models\District;
+use Laravolt\Indonesia\Models\Province;
+use Laravolt\Indonesia\Models\Village;
+
+/**
+ * @return array{province_code: string, city_code: string, district_code: string, village_code: string, postal_code: string}
+ */
+function createCheckoutRegion(): array
+{
+    Province::query()->create(['code' => '31', 'name' => 'DKI JAKARTA']);
+    City::query()->create(['code' => '3171', 'province_code' => '31', 'name' => 'KOTA JAKARTA SELATAN']);
+    District::query()->create(['code' => '3171010', 'city_code' => '3171', 'name' => 'KEBAYORAN BARU']);
+    Village::query()->create(['code' => '3171010001', 'district_code' => '3171010', 'name' => 'SELONG']);
+
+    return [
+        'province_code' => '31',
+        'city_code' => '3171',
+        'district_code' => '3171010',
+        'village_code' => '3171010001',
+        'postal_code' => '12110',
+    ];
+}
+
+/**
+ * @return array<string, mixed>
+ */
+function fakeRajaOngkir(int $cost = 20000): array
+{
+    config()->set('services.rajaongkir.key', 'test-rajaongkir-key');
+
+    return [
+        'https://rajaongkir.komerce.id/api/v1/destination/domestic-destination*' => Http::response([
+            'data' => [[
+                'id' => 555,
+                'city_name' => 'JAKARTA SELATAN',
+                'district_name' => 'KEBAYORAN BARU',
+                'subdistrict_name' => 'SELONG',
+            ]],
+        ]),
+        'https://rajaongkir.komerce.id/api/v1/calculate/domestic-cost' => Http::response([
+            'data' => [
+                ['name' => 'JNE', 'code' => 'jne', 'service' => 'REG', 'description' => 'Reguler', 'cost' => $cost, 'etd' => '2-3 day'],
+                ['name' => 'JNE', 'code' => 'jne', 'service' => 'YES', 'description' => 'Kilat', 'cost' => $cost * 2, 'etd' => '1 day'],
+            ],
+        ]),
+    ];
+}
 
 it('redirects guests to login before they can use the cart or checkout', function () {
     $category = Category::query()->create([
@@ -178,6 +226,7 @@ it('updates cart quantities within stock and prevents one user changing another 
 });
 
 it('creates an order from cart items, copies account details, and reserves stock', function () {
+    $region = createCheckoutRegion();
     $user = User::factory()->create([
         'name' => 'Dina Pelanggan',
         'email' => 'dina@example.test',
@@ -210,11 +259,15 @@ it('creates an order from cart items, copies account details, and reserves stock
         ->assertSee('value="+628123456789"', escape: false)
         ->assertSee('value="dina@example.test"', escape: false)
         ->assertSee('Jl. Anggrek No. 8')
+        ->assertSee('id="province_code"', escape: false)
+        ->assertSee('name="city_code" disabled', escape: false)
+        ->assertSee('>DKI JAKARTA</option>', escape: false)
         ->assertSee('Pembayaran akan diproses dengan aman melalui Midtrans');
 
     config()->set('services.midtrans.server_key', 'test-server-key');
     Http::preventStrayRequests();
     Http::fake([
+        ...fakeRajaOngkir(),
         'https://app.sandbox.midtrans.com/snap/v1/transactions' => Http::response([
             'token' => 'snap-test-token',
             'redirect_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/test-token',
@@ -226,6 +279,8 @@ it('creates an order from cart items, copies account details, and reserves stock
         'phone' => '+628123456789',
         'email' => 'dina@example.test',
         'address' => 'Jl. Anggrek No. 8',
+        ...$region,
+        'shipping_option' => 'jne|REG',
     ]);
     $order = Order::query()->where('user_id', $user->id)->firstOrFail();
 
@@ -237,7 +292,16 @@ it('creates an order from cart items, copies account details, and reserves stock
         'customer_phone' => '+628123456789',
         'customer_email' => 'dina@example.test',
         'shipping_address' => 'Jl. Anggrek No. 8',
-        'total' => '1798000.00',
+        'shipping_province_code' => '31',
+        'shipping_province_name' => 'DKI JAKARTA',
+        'shipping_city_name' => 'KOTA JAKARTA SELATAN',
+        'shipping_district_name' => 'KEBAYORAN BARU',
+        'shipping_village_name' => 'SELONG',
+        'shipping_postal_code' => '12110',
+        'shipping_cost' => '20000.00',
+        'shipping_courier' => 'jne',
+        'shipping_service' => 'REG',
+        'total' => '1818000.00',
         'status' => 'pending_payment',
         'payment_status' => 'pending',
     ]);
@@ -260,8 +324,10 @@ it('creates an order from cart items, copies account details, and reserves stock
         'payment_url' => 'https://app.sandbox.midtrans.com/snap/v2/vtweb/test-token',
     ]);
     Http::assertSent(fn (Request $request): bool => $request->url() === 'https://app.sandbox.midtrans.com/snap/v1/transactions'
-        && $request['transaction_details']['gross_amount'] === 1798000
-        && $request['customer_details']['email'] === 'dina@example.test');
+        && $request['transaction_details']['gross_amount'] === 1818000
+        && collect($request['item_details'])->contains(fn (array $item): bool => $item['id'] === 'SHIPPING' && $item['price'] === 20000)
+        && $request['customer_details']['email'] === 'dina@example.test'
+        && $request['customer_details']['shipping_address']['address'] === 'Jl. Anggrek No. 8, SELONG, KEBAYORAN BARU, KOTA JAKARTA SELATAN, DKI JAKARTA, 12110');
 
     $this->actingAs($user)
         ->get(route('orders.show', $order->order_number))
@@ -269,10 +335,68 @@ it('creates an order from cart items, copies account details, and reserves stock
         ->assertSee($order->order_number)
         ->assertSee('Menunggu pembayaran')
         ->assertSee('Bayar dengan Midtrans')
-        ->assertSee('Checkout Speaker');
+        ->assertSee('Checkout Speaker')
+        ->assertSee('SELONG, KEBAYORAN BARU, KOTA JAKARTA SELATAN, DKI JAKARTA 12110');
+});
+
+it('loads each region level from the selected parent', function () {
+    $region = createCheckoutRegion();
+
+    $this->actingAs(User::factory()->create())
+        ->getJson(route('checkout.regions.cities', $region['province_code']))
+        ->assertOk()
+        ->assertExactJson([['code' => '3171', 'name' => 'KOTA JAKARTA SELATAN']]);
+
+    $this->getJson(route('checkout.regions.districts', $region['city_code']))
+        ->assertOk()
+        ->assertExactJson([['code' => '3171010', 'name' => 'KEBAYORAN BARU']]);
+
+    $this->getJson(route('checkout.regions.villages', $region['district_code']))
+        ->assertOk()
+        ->assertExactJson([['code' => '3171010001', 'name' => 'SELONG']]);
+
+    $this->getJson(route('checkout.regions.cities', '99'))->assertNotFound();
+});
+
+it('rejects a city that does not belong to the selected province', function () {
+    $region = createCheckoutRegion();
+    Province::query()->create(['code' => '32', 'name' => 'JAWA BARAT']);
+    $user = User::factory()->create();
+    $category = Category::query()->create([
+        'name' => 'Audio',
+        'slug' => 'audio',
+        'description' => null,
+    ]);
+    $product = Product::query()->create([
+        'category_id' => $category->id,
+        'name' => 'Region Validation Speaker',
+        'sku' => 'SN-AUD-REGION',
+        'price' => 500000,
+        'stock' => 2,
+        'image_path' => 'products/region-speaker.png',
+    ]);
+    CartItem::query()->create([
+        'user_id' => $user->id,
+        'product_id' => $product->id,
+        'quantity' => 1,
+    ]);
+
+    $this->actingAs($user)
+        ->post(route('checkout.store'), [
+            'name' => 'Test Customer',
+            'phone' => '08123456789',
+            'email' => 'customer@example.test',
+            'address' => 'Jl. Test No. 1',
+            ...$region,
+            'province_code' => '32',
+        ])
+        ->assertSessionHasErrors('city_code');
+
+    $this->assertDatabaseCount('orders', 0);
 });
 
 it('keeps the cart and stock when Midtrans rejects payment creation', function () {
+    $region = createCheckoutRegion();
     $user = User::factory()->create();
     $category = Category::query()->create([
         'name' => 'Audio',
@@ -296,6 +420,7 @@ it('keeps the cart and stock when Midtrans rejects payment creation', function (
     config()->set('services.midtrans.server_key', 'test-server-key');
     Http::preventStrayRequests();
     Http::fake([
+        ...fakeRajaOngkir(),
         'https://app.sandbox.midtrans.com/snap/v1/transactions' => Http::response([
             'message' => 'Unauthorized',
         ], 401),
@@ -308,6 +433,8 @@ it('keeps the cart and stock when Midtrans rejects payment creation', function (
             'phone' => '08123456789',
             'email' => 'customer@example.test',
             'address' => 'Jl. Test No. 1',
+            ...$region,
+            'shipping_option' => 'jne|REG',
         ])
         ->assertRedirect(route('checkout.create'))
         ->assertSessionHasErrors('payment');
@@ -324,6 +451,7 @@ it('keeps the cart and stock when Midtrans rejects payment creation', function (
 });
 
 it('keeps the cart and stock unchanged when checkout finds insufficient stock', function () {
+    $region = createCheckoutRegion();
     $user = User::factory()->create();
     $category = Category::query()->create([
         'name' => 'Audio',
@@ -344,12 +472,17 @@ it('keeps the cart and stock unchanged when checkout finds insufficient stock', 
         'quantity' => 2,
     ]);
 
+    Http::preventStrayRequests();
+    Http::fake(fakeRajaOngkir());
+
     $this->actingAs($user)
         ->post(route('checkout.store'), [
             'name' => 'Test Customer',
             'phone' => '08123456789',
             'email' => 'customer@example.test',
             'address' => 'Jl. Test No. 1',
+            ...$region,
+            'shipping_option' => 'jne|REG',
         ])
         ->assertSessionHasErrors('cart');
 
@@ -388,7 +521,79 @@ it('validates required checkout contact details', function () {
 
     $this->actingAs($user)
         ->post(route('checkout.store'), [])
-        ->assertSessionHasErrors(['name', 'phone', 'email', 'address']);
+        ->assertSessionHasErrors([
+            'name',
+            'phone',
+            'email',
+            'address',
+            'province_code',
+            'city_code',
+            'district_code',
+            'village_code',
+            'postal_code',
+            'shipping_option',
+        ]);
+
+    $this->assertDatabaseCount('orders', 0);
+});
+
+it('returns shipping options from RajaOngkir for a selected village', function () {
+    $region = createCheckoutRegion();
+    $user = User::factory()->create();
+    $category = Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'description' => null]);
+    $product = Product::query()->create([
+        'category_id' => $category->id,
+        'name' => 'Shipping Speaker',
+        'sku' => 'SN-AUD-SHIP',
+        'price' => 500000,
+        'stock' => 5,
+        'image_path' => 'products/ship.png',
+    ]);
+    CartItem::query()->create(['user_id' => $user->id, 'product_id' => $product->id, 'quantity' => 2]);
+
+    Http::preventStrayRequests();
+    Http::fake(fakeRajaOngkir(15000));
+
+    $this->actingAs($user)
+        ->postJson(route('checkout.shipping-costs'), ['village_code' => $region['village_code']])
+        ->assertOk()
+        ->assertJsonPath('options.0.key', 'jne|REG')
+        ->assertJsonPath('options.0.cost', 15000);
+
+    Http::assertSent(fn (Request $request): bool => str_ends_with($request->url(), '/calculate/domestic-cost')
+        && $request['origin'] === '79234'
+        && $request['destination'] === 555
+        && $request['weight'] === 1000
+        && $request->hasHeader('key', 'test-rajaongkir-key'));
+});
+
+it('rejects checkout when the selected shipping service is unavailable', function () {
+    $region = createCheckoutRegion();
+    $user = User::factory()->create();
+    $category = Category::query()->create(['name' => 'Audio', 'slug' => 'audio', 'description' => null]);
+    $product = Product::query()->create([
+        'category_id' => $category->id,
+        'name' => 'Unavailable Shipping Speaker',
+        'sku' => 'SN-AUD-NOSHIP',
+        'price' => 500000,
+        'stock' => 5,
+        'image_path' => 'products/noship.png',
+    ]);
+    CartItem::query()->create(['user_id' => $user->id, 'product_id' => $product->id, 'quantity' => 1]);
+
+    Http::preventStrayRequests();
+    Http::fake(fakeRajaOngkir());
+
+    $this->actingAs($user)
+        ->post(route('checkout.store'), [
+            'name' => 'Test Customer',
+            'phone' => '08123456789',
+            'email' => 'customer@example.test',
+            'address' => 'Jl. Test No. 1',
+            ...$region,
+            'shipping_option' => 'jnt|EZ',
+        ])
+        ->assertSessionHasErrors('shipping_option');
 
     $this->assertDatabaseCount('orders', 0);
 });
