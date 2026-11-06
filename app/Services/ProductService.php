@@ -16,6 +16,18 @@ class ProductService
     private const LOW_STOCK_THRESHOLD = 10;
 
     /**
+     * @return Collection<int, Product>
+     */
+    public function getAllForApi(): Collection
+    {
+        return Product::query()
+            ->with('category')
+            ->orderByDesc('created_at')
+            ->orderByDesc('id')
+            ->get();
+    }
+
+    /**
      * @return array<int, array{id: int, name: string, sku: string, category: string, price: string, stock: int, status: string, image_url: string}>
      */
     public function getAllForIndex(): array
